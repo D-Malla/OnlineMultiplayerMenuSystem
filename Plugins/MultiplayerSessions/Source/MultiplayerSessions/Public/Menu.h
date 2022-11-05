@@ -6,6 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "Menu.generated.h"
 
+class UButton;
+class UMultiplayerSessionsSubsystem;
+	
 /**
  * 
  */
@@ -17,5 +20,33 @@ class MULTIPLAYERSESSIONS_API UMenu : public UUserWidget
 public:
 	
 	UFUNCTION(BlueprintCallable)
-	void MenuSetup();
+	void MenuSetup(int32 NumberOfPublicConnections = 4, FString TypeOfMatch = FString(TEXT("FreeForAll")));
+
+protected:
+	virtual bool Initialize() override;
+
+	virtual void OnLevelRemovedFromWorld(ULevel* InLevel, UWorld* InWorld) override;
+private:
+	UPROPERTY(meta = (BindWidget)) // If you use the meta specifier to bind variables, it must be named the same as the BP. ie: HostButton/JoinButton
+	UButton* HostButton;
+	
+	UPROPERTY(meta = (BindWidget))
+	UButton* JoinButton;
+
+	UFUNCTION()
+	void HostButtonClicked();
+
+	UFUNCTION()
+	void JoinButtonClicked();
+	
+	UFUNCTION()
+	void MenuTearDown();
+
+	// The subsystem designed to handle all online session functionality
+	UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem;
+	
+	int32 NumPublicConnections{4};
+
+	FString MatchType{TEXT("FreeForAll")};
+	
 };
